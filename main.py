@@ -10,7 +10,8 @@ logger = logging.getLogger()
 
 class PlotLines:
     def __init__(self, range: tuple[int, int] = (0, 10), amount: int = 250) -> None:
-        self.sameple_set = np.random.uniform(range[0], range[1], size=(amount, 4))
+        self.sample_set = np.random.uniform(
+            range[0], range[1], size=(amount, 4))
         fig, (self.ax1, self.ax2) = plt.subplots(1, 2)
 
         self.ax1.set_title("All Lines")
@@ -29,7 +30,7 @@ class PlotLines:
 
         start = time.time()
 
-        for tmp_x1, tmp_y1, tmp_x2, tmp_y2 in self.sameple_set:
+        for tmp_x1, tmp_y1, tmp_x2, tmp_y2 in self.sample_set:
             if not (x1 <= tmp_x1 <= x2 and y1 <= tmp_y1 <= y2 and
                     x1 <= tmp_x2 <= x2 and y1 <= tmp_y2 <= y2):
                 continue
@@ -40,8 +41,28 @@ class PlotLines:
 
         logger.info("Used time is %f", end - start)
 
+    def filter_numpy(self, range: tuple[tuple[int, int], tuple[int, int]]) -> None:
+        self.filtered_data = []
+
+        x1, y1 = range[0]
+        x2, y2 = range[1]
+
+        tmp_x1, tmp_y1 = 0, 1
+        tmp_x2, tmp_y2 = 2, 3
+
+        mask = (
+            (x1 <= self.sample_set[:, tmp_x1]) & (self.sample_set[:, tmp_x1] <= x2) &
+            (y1 <= self.sample_set[:, tmp_y1]) & (self.sample_set[:, tmp_y1] <= y2) &
+            (x1 <= self.sample_set[:, tmp_x2]) & (self.sample_set[:, tmp_x2] <= x2) &
+            (y1 <= self.sample_set[:, tmp_y2]) & (self.sample_set[:, tmp_y2] <= y2)
+        )
+
+        self.filtered_data = self.sample_set[mask]
+
+        logger.info("test %s", self.sample_set[mask])
+
     def plot(self) -> None:
-        for x1, y1, x2, y2 in self.sameple_set:
+        for x1, y1, x2, y2 in self.sample_set:
             self.ax1.plot([x1, x2], [y1, y2])
 
         for x1, y1, x2, y2 in self.filtered_data:
@@ -52,5 +73,6 @@ class PlotLines:
 
 if __name__ == "__main__":
     pl = PlotLines(amount=250)
-    pl.filter(((5, 0), (10, 10)))
+    pl.filter_numpy(((5, 0), (10, 10)))
+    # pl.filter(((5, 0), (10, 10)))
     pl.plot()

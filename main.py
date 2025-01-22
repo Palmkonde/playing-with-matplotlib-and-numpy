@@ -50,6 +50,8 @@ class PlotLines:
         tmp_x1, tmp_y1 = 0, 1
         tmp_x2, tmp_y2 = 2, 3
 
+        start = time.time()
+
         mask = (
             (x1 <= self.sample_set[:, tmp_x1]) & (self.sample_set[:, tmp_x1] <= x2) &
             (y1 <= self.sample_set[:, tmp_y1]) & (self.sample_set[:, tmp_y1] <= y2) &
@@ -58,8 +60,10 @@ class PlotLines:
         )
 
         self.filtered_data = self.sample_set[mask]
+        
+        end = time.time()
 
-        logger.info("test %s", self.sample_set[mask])
+        logger.info("Used time is %f", end - start)
 
     def plot(self) -> None:
         for x1, y1, x2, y2 in self.sample_set:
